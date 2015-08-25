@@ -8,75 +8,16 @@
 
 import Foundation
 
-public enum EncodingOutput {
-    case Uppercase
-    case Lowercase
-}
-
-private let lowercaseTable : [Character] = [
-    Character("0"),
-    Character("1"),
-    Character("2"),
-    Character("3"),
-    Character("4"),
-    Character("5"),
-    Character("6"),
-    Character("7"),
-    Character("8"),
-    Character("9"),
-    Character("a"),
-    Character("b"),
-    Character("c"),
-    Character("d"),
-    Character("e"),
-    Character("f"),
-]
-
-private let uppercaseTable : [Character] = [
-    Character("0"),
-    Character("1"),
-    Character("2"),
-    Character("3"),
-    Character("4"),
-    Character("5"),
-    Character("6"),
-    Character("7"),
-    Character("8"),
-    Character("9"),
-    Character("A"),
-    Character("B"),
-    Character("C"),
-    Character("D"),
-    Character("E"),
-    Character("F"),
-]
-
 /**
-Encode a [UInt8] byte array as a hexidecimal String.
+Encode a UInt8 sequence as a hexidecimal String.
 
-:param: bytes Bytes to encode.
-:param: output Output uppercase or lowercase hex
-:returns: A String of the encoded bytes.
+:param: bytes Byte sequence to encode.
+:param: letterCase Output uppercase or lowercase hex
+:returns: The hex encoded string.
 */
-public func Encode(bytes : [UInt8], output : EncodingOutput = .Lowercase) -> String {
+public func Encode<S : SequenceType where S.Generator.Element == UInt8>(bytes : S, letterCase : LetterCase = .Lower) -> String {
     var result = String()
-    result.reserveCapacity(bytes.count * 2)
-    
-    let table : [Character]
-    switch output {
-    case .Lowercase:
-        table = lowercaseTable
-    case .Uppercase:
-        table = uppercaseTable
-    }
-    
-    for b in bytes {
-        let nibble1 = (b & 0b11110000) >> 4
-        let nibble2 = b & 0b00001111
-        result.append(table[Int(nibble1)])
-        result.append(table[Int(nibble2)])
-    }
-    
+    EncodeByteSequence(bytes, &result, letterCase)
     return result
 }
 
@@ -88,8 +29,54 @@ an even number valid characters (0-9, a-f, and A-F).
 :returns: (byte array, true) on success, ([], false) on failure due to invalid character or odd number of input characters.
 */
 public func Decode(str : String) -> ([UInt8], Bool) {
-    let utf8 = str.utf8
+    return DecodeUTF8Sequence(str.utf8)
+}
+
+/**
+Case to use to encode hexidecimal strings.
+
+- Upper: Encode string using upper case hex characters.
+- Lower: Encode string using lower case hex characters.
+*/
+public enum LetterCase {
+    case Upper
+    case Lower
+}
+
+/**
+Encode a UInt8 sequence to an output stream.
+
+:param: bytes Byte sequence to encode.
+:param: outputStream Destination for the encoded string.
+:param: letterCase Output uppercase or lowercase hex
+*/
+
+public func EncodeByteSequence<ByteSequence : SequenceType, TargetStream : OutputStreamType where ByteSequence.Generator.Element == UInt8>
+    (bytes : ByteSequence, inout outputStream : TargetStream, letterCase : LetterCase) {
+    let table : [String]
+    switch letterCase {
+    case .Lower:
+        table = lowercaseTable
+    case .Upper:
+        table = uppercaseTable
+    }
     
+    for b in bytes {
+        let nibble1 = (b & 0b11110000) >> 4
+        let nibble2 = b & 0b00001111
+        outputStream.write(table[Int(nibble1)])
+        outputStream.write(table[Int(nibble2)])
+    }
+}
+
+/**
+Decode a sequence of hexidecimal ASCII/UTF-8 characters to a [UInt8].
+The input string must contain an even number valid characters (0-9, a-f, and A-F).
+
+:param: str String to decode. Should be characters 0-9, a-f, and A-F.
+:returns: (byte array, true) on success, ([], false) on failure due to invalid character or odd number of input characters.
+*/
+public func DecodeUTF8Sequence<UTF8Sequence : SequenceType where UTF8Sequence.Generator.Element == UInt8> (sequence : UTF8Sequence) -> ([UInt8], Bool) {
     // ASCII values
     let uppercaseA = UInt8(65)
     let uppercaseF = UInt8(70)
@@ -103,7 +90,7 @@ public func Decode(str : String) -> ([UInt8], Bool) {
     
     var result = [UInt8]()
     
-    for codeUnit in utf8 {
+    for codeUnit in sequence {
         if codeUnit >= uppercaseA && codeUnit <= uppercaseF {
             nibbles.append(10 + codeUnit - uppercaseA)
         } else if codeUnit >= lowercaseA && codeUnit <= lowercaseF {
@@ -124,3 +111,13 @@ public func Decode(str : String) -> ([UInt8], Bool) {
     }
     return (result, true)
 }
+
+// Table to encode bytes with lowercase hexidecimal characters.
+private let lowercaseTable : [String] = [
+    "0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"
+]
+
+// Table to encode bytes with uppercase hexidecimal characters.
+private let uppercaseTable : [String] = [
+    "0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"
+]

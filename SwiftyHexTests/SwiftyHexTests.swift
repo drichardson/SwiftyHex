@@ -12,7 +12,8 @@ import SwiftyHex
 class SwiftyHexTests: XCTestCase {
     
     func testDefaultEncoderIsLowercase() {
-        XCTAssertEqual("0a", SwiftyHex.Encode([0xa]))
+        let bytes : [UInt8] = [0x0a]
+        XCTAssertEqual("0a", SwiftyHex.Encode(bytes))
     }
     
     func testCodecLowercase() {
@@ -20,7 +21,7 @@ class SwiftyHexTests: XCTestCase {
         for i in 0..<256 {
             bytes.append(UInt8(i))
         }
-        let encodedString = SwiftyHex.Encode(bytes, output : .Lowercase)
+        let encodedString = SwiftyHex.Encode(bytes, letterCase : .Lower)
         let (output, ok) = SwiftyHex.Decode(encodedString)
         XCTAssertTrue(ok)
         XCTAssertEqual(bytes, output)
@@ -31,7 +32,7 @@ class SwiftyHexTests: XCTestCase {
         for i in 0..<256 {
             bytes.append(UInt8(i))
         }
-        let encodedString = SwiftyHex.Encode(bytes, output : .Uppercase)
+        let encodedString = SwiftyHex.Encode(bytes, letterCase : .Upper)
         let (output, ok) = SwiftyHex.Decode(encodedString)
         XCTAssertTrue(ok)
         XCTAssertEqual(bytes, output)
@@ -83,7 +84,7 @@ class SwiftyHexTests: XCTestCase {
         }
         
         self.measureBlock() {
-            SwiftyHex.Encode(bytes, output: .Lowercase)
+            SwiftyHex.Encode(bytes, letterCase: .Lower)
         }
     }
     
