@@ -38,7 +38,7 @@ To integrate SwiftyHex into your Xcode project using CocoaPods, specify it in yo
 
 ```ruby
 use_frameworks!
-pod 'SwiftyHex', '~> 1.0'
+pod 'SwiftyHex', '~> 1.1'
 ```
 
 Then, run the following command:
