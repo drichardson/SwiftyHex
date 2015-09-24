@@ -11,13 +11,13 @@ import Foundation
 /**
 Encode a UInt8 sequence as a hexidecimal String.
 
-:param: bytes Byte sequence to encode.
-:param: letterCase Output uppercase or lowercase hex
-:returns: The hex encoded string.
+- parameter bytes: Byte sequence to encode.
+- parameter letterCase: Output uppercase or lowercase hex
+- returns: The hex encoded string.
 */
 public func Encode<S : SequenceType where S.Generator.Element == UInt8>(bytes : S, letterCase : LetterCase = .Lower) -> String {
     var result = String()
-    EncodeByteSequence(bytes, &result, letterCase)
+    EncodeByteSequence(bytes, outputStream: &result, letterCase: letterCase)
     return result
 }
 
@@ -25,8 +25,8 @@ public func Encode<S : SequenceType where S.Generator.Element == UInt8>(bytes : 
 Decode a hexidecimal String to a [UInt8]. The input string must contain
 an even number valid characters (0-9, a-f, and A-F).
 
-:param: str String to decode. Should be characters 0-9, a-f, and A-F.
-:returns: (byte array, true) on success, ([], false) on failure due to invalid character or odd number of input characters.
+- parameter str: String to decode. Should be characters 0-9, a-f, and A-F.
+- returns: (byte array, true) on success, ([], false) on failure due to invalid character or odd number of input characters.
 */
 public func Decode(str : String) -> ([UInt8], Bool) {
     return DecodeUTF8Sequence(str.utf8)
@@ -46,9 +46,9 @@ public enum LetterCase {
 /**
 Encode a UInt8 sequence to an output stream.
 
-:param: bytes Byte sequence to encode.
-:param: outputStream Destination for the encoded string.
-:param: letterCase Output uppercase or lowercase hex
+- parameter bytes: Byte sequence to encode.
+- parameter outputStream: Destination for the encoded string.
+- parameter letterCase: Output uppercase or lowercase hex
 */
 
 public func EncodeByteSequence<ByteSequence : SequenceType, TargetStream : OutputStreamType where ByteSequence.Generator.Element == UInt8>
@@ -73,8 +73,8 @@ public func EncodeByteSequence<ByteSequence : SequenceType, TargetStream : Outpu
 Decode a sequence of hexidecimal ASCII/UTF-8 characters to a [UInt8].
 The input string must contain an even number valid characters (0-9, a-f, and A-F).
 
-:param: str String to decode. Should be characters 0-9, a-f, and A-F.
-:returns: (byte array, true) on success, ([], false) on failure due to invalid character or odd number of input characters.
+- parameter str: String to decode. Should be characters 0-9, a-f, and A-F.
+- returns: (byte array, true) on success, ([], false) on failure due to invalid character or odd number of input characters.
 */
 public func DecodeUTF8Sequence<UTF8Sequence : SequenceType where UTF8Sequence.Generator.Element == UInt8> (sequence : UTF8Sequence) -> ([UInt8], Bool) {
     // ASCII values

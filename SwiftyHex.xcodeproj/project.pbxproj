@@ -161,6 +161,7 @@
 		9151142D1B8CB19D00299BA0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftMigration = 0700;
 				LastUpgradeCheck = 0640;
 				ORGANIZATIONNAME = "Doug Richardson";
 				TargetAttributes = {
@@ -406,6 +407,7 @@
 				9151144E1B8CB19D00299BA0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9151144F1B8CB19D00299BA0 /* Build configuration list for PBXNativeTarget "SwiftyHexTests" */ = {
 			isa = XCConfigurationList;
@@ -414,6 +416,7 @@
 				915114511B8CB19D00299BA0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
