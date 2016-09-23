@@ -15,7 +15,7 @@ Encode a UInt8 sequence as a hexidecimal String.
 - parameter letterCase: Output uppercase or lowercase hex
 - returns: The hex encoded string.
 */
-public func Encode<S : SequenceType where S.Generator.Element == UInt8>(bytes : S, letterCase : LetterCase = .Lower) -> String {
+public func Encode<S : Sequence>(_ bytes : S, letterCase : LetterCase = .Lower) -> String where S.Iterator.Element == UInt8 {
     var result = String()
     EncodeByteSequence(bytes, outputStream: &result, letterCase: letterCase)
     return result
@@ -28,7 +28,7 @@ an even number valid characters (0-9, a-f, and A-F).
 - parameter str: String to decode. Should be characters 0-9, a-f, and A-F.
 - returns: (byte array, true) on success, ([], false) on failure due to invalid character or odd number of input characters.
 */
-public func Decode(str : String) -> ([UInt8], Bool) {
+public func Decode(_ str : String) -> ([UInt8], Bool) {
     return DecodeUTF8Sequence(str.utf8)
 }
 
@@ -51,8 +51,8 @@ Encode a UInt8 sequence to an output stream.
 - parameter letterCase: Output uppercase or lowercase hex
 */
 
-public func EncodeByteSequence<ByteSequence : SequenceType, TargetStream : OutputStreamType where ByteSequence.Generator.Element == UInt8>
-    (bytes : ByteSequence, inout outputStream : TargetStream, letterCase : LetterCase) {
+public func EncodeByteSequence<ByteSequence : Sequence, TargetStream : TextOutputStream>
+    (_ bytes : ByteSequence, outputStream : inout TargetStream, letterCase : LetterCase) where ByteSequence.Iterator.Element == UInt8 {
     let table : [String]
     switch letterCase {
     case .Lower:
@@ -76,7 +76,7 @@ The input string must contain an even number valid characters (0-9, a-f, and A-F
 - parameter str: String to decode. Should be characters 0-9, a-f, and A-F.
 - returns: (byte array, true) on success, ([], false) on failure due to invalid character or odd number of input characters.
 */
-public func DecodeUTF8Sequence<UTF8Sequence : SequenceType where UTF8Sequence.Generator.Element == UInt8> (sequence : UTF8Sequence) -> ([UInt8], Bool) {
+public func DecodeUTF8Sequence<UTF8Sequence : Sequence> (_ sequence : UTF8Sequence) -> ([UInt8], Bool) where UTF8Sequence.Iterator.Element == UInt8 {
     // ASCII values
     let uppercaseA = UInt8(65)
     let uppercaseF = UInt8(70)
@@ -103,7 +103,7 @@ public func DecodeUTF8Sequence<UTF8Sequence : SequenceType where UTF8Sequence.Ge
         if nibbles.count == 2 {
             let byte = (nibbles[0] << 4) | nibbles[1]
             result.append(byte)
-            nibbles.removeAll(keepCapacity: true)
+            nibbles.removeAll(keepingCapacity: true)
         }
     }
     if nibbles.count != 0 {

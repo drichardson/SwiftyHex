@@ -83,8 +83,8 @@ class SwiftyHexTests: XCTestCase {
             bytes.append(UInt8(i%256))
         }
         
-        self.measureBlock() {
-            SwiftyHex.Encode(bytes, letterCase: .Lower)
+        self.measure() {
+            _ = SwiftyHex.Encode(bytes, letterCase: .Lower)
         }
     }
     
@@ -95,8 +95,8 @@ class SwiftyHexTests: XCTestCase {
         }
         let encodedString = SwiftyHex.Encode(bytes)
         
-        self.measureBlock() {
-            SwiftyHex.Decode(encodedString)
+        self.measure() {
+            _ = SwiftyHex.Decode(encodedString)
         }
     }
 }
